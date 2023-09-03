@@ -157,6 +157,9 @@ func (handler *RecipesHandler) UpdateRecipeHandler(c *gin.Context) {
 		return
 	}
 
+	log.Println("Remove data from Redis")
+	handler.redisClient.Del(handler.ctx, "recipes")
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Recipe has been updated",
 	})
