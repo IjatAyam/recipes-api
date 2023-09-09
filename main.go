@@ -29,6 +29,7 @@ import (
 	"os"
 )
 
+var authHandler *handlers.AuthHandler
 var recipesHandler *handlers.RecipesHandler
 
 func init() {
@@ -49,16 +50,29 @@ func init() {
 	log.Println(status)
 
 	recipesHandler = handlers.NewRecipesHandler(ctx, collection, redisClient)
+
+	collectionUsers := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
+	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
 }
 
 func main() {
 	router := gin.Default()
-	router.POST("/recipes", recipesHandler.NewRecipeHandler)
+
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
-	recipesIdRoute := "recipes/:id"
-	router.PUT(recipesIdRoute, recipesHandler.UpdateRecipeHandler)
-	router.DELETE(recipesIdRoute, recipesHandler.DeleteRecipeHandler)
-	router.GET(recipesIdRoute, recipesHandler.GetOneRecipeHandler)
-	//router.GET("/recipes/search", SearchRecipesHandler)
+
+	router.POST("/signin", authHandler.SignInHandler)
+	router.POST("/refresh", authHandler.RefreshHandler)
+
+	authorized := router.Group("/recipes")
+	authorized.Use(authHandler.AuthMiddleware())
+	{
+
+		authorized.POST("", recipesHandler.NewRecipeHandler)
+		recipesIdRoute := "/:id"
+		authorized.PUT(recipesIdRoute, recipesHandler.UpdateRecipeHandler)
+		authorized.DELETE(recipesIdRoute, recipesHandler.DeleteRecipeHandler)
+		authorized.GET(recipesIdRoute, recipesHandler.GetOneRecipeHandler)
+	}
+
 	router.Run()
 }
