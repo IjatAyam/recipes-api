@@ -46,6 +46,7 @@ func (user *User) ComparePassword(password string) (match bool, err error) {
 	return false, nil
 }
 
+// swagger:parameters auth signIn
 type InputUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

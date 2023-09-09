@@ -66,7 +66,6 @@ func main() {
 	authorized := router.Group("/recipes")
 	authorized.Use(authHandler.AuthMiddleware())
 	{
-
 		authorized.POST("", recipesHandler.NewRecipeHandler)
 		recipesIdRoute := "/:id"
 		authorized.PUT(recipesIdRoute, recipesHandler.UpdateRecipeHandler)
@@ -74,5 +73,5 @@ func main() {
 		authorized.GET(recipesIdRoute, recipesHandler.GetOneRecipeHandler)
 	}
 
-	router.Run()
+	router.RunTLS(":443", "certs/localhost.crt", "certs/localhost.key")
 }
