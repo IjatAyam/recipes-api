@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/IjatAyam/recipes-api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -98,7 +97,6 @@ func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
 	recipe.PublishedAt = time.Now()
 	_, err := handler.collection.InsertOne(handler.ctx, recipe)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Error while inserting a new recipe",
 		})
@@ -150,7 +148,6 @@ func (handler *RecipesHandler) UpdateRecipeHandler(c *gin.Context) {
 		{"tags", recipe.Tags},
 	}}})
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})

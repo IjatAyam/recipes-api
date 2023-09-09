@@ -1,0 +1,62 @@
+package main
+
+import (
+	"context"
+	"github.com/IjatAyam/recipes-api/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"log"
+	"os"
+	"time"
+)
+
+type params struct {
+	memory      uint32
+	iterations  uint32
+	parallelism uint8
+	saltLength  uint32
+	keyLength   uint32
+}
+
+func main() {
+	inputUsers := [3]models.InputUser{
+		{
+			Username: "admin",
+			Password: "fCRmh4Q2J7Rseqkz",
+		},
+		{
+			Username: "packt",
+			Password: "RE4zfHB35VPtTkbT",
+		},
+		{
+			Username: "mlabouardy",
+			Password: "L3nSFRcZzNQ67bcc",
+		},
+	}
+
+	ctx := context.Background()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+	if err = client.Ping(context.TODO(), readpref.Primary()); err != nil {
+		log.Fatal(err)
+	}
+
+	collection := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
+
+	for _, inputUser := range inputUsers {
+		hashedPassword, err := inputUser.GenerateHashedPassword()
+		if err != nil {
+			log.Fatal()
+		}
+
+		user := models.User{
+			ID:             primitive.NewObjectID(),
+			Username:       inputUser.Username,
+			HashedPassword: hashedPassword,
+			CreatedAt:      time.Now(),
+		}
+
+		collection.InsertOne(ctx, user)
+	}
+}
