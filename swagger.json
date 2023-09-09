@@ -121,6 +121,27 @@
       }
     },
     "/recipes/{id}": {
+      "get": {
+        "description": "Get one recipe",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "recipes",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "recipe ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      },
       "put": {
         "description": "Update an existing recipe",
         "produces": [
@@ -175,6 +196,61 @@
           },
           "404": {
             "description": "Invalid recipe ID"
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "description": "Get new token in exchange for an old one",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "refresh",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Token is new and doesn't need a refresh"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/signin": {
+      "post": {
+        "description": "Login with username and password",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "operationId": "signIn",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "username",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "password",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "401": {
+            "description": "Invalid credentials"
           }
         }
       }

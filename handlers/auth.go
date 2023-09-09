@@ -34,6 +34,17 @@ func NewAuthHandler(ctx context.Context, collection *mongo.Collection) *AuthHand
 	}
 }
 
+// swagger:operation POST /signin auth signIn
+// Login with username and password
+// ---
+//
+//	produces:
+//		- application/json
+//	responses:
+//		'200':
+//			description: Successful operation
+//		'401':
+//			description: Invalid credentials
 func (handler *AuthHandler) SignInHandler(c *gin.Context) {
 	var inputUser models.InputUser
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
@@ -94,6 +105,19 @@ func (handler *AuthHandler) SignInHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, jwtOutput)
 }
 
+// swagger:operation POST /refresh auth refresh
+// Get new token in exchange for an old one
+// ---
+//
+//	produces:
+//		- application/json
+//	responses:
+//		'200':
+//			description: Successful operation
+//		'400':
+//			description: Token is new and doesn't need a refresh
+//		'401':
+//			description: Invalid credentials
 func (handler *AuthHandler) RefreshHandler(c *gin.Context) {
 	tokenValue := c.GetHeader("Authorization")
 	claims := &Claims{}

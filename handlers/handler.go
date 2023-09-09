@@ -244,6 +244,7 @@ func (handler *RecipesHandler) GetOneRecipeHandler(c *gin.Context) {
 //	responses:
 //		'200':
 //			description: Successful operation
+
 //func SearchRecipesHandler(c *gin.Context) {
 //	tag := c.Query("tag")
 //	listOfRecipes := make([]Recipe, 0)
