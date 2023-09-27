@@ -20,6 +20,7 @@ package main
 import (
 	"context"
 	"github.com/IjatAyam/recipes-api/handlers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -55,8 +56,9 @@ func init() {
 	authHandler = handlers.NewAuthHandler(ctx, collectionUsers)
 }
 
-func main() {
+func SetupServer() *gin.Engine {
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 
@@ -67,11 +69,16 @@ func main() {
 	authorized.Use(authHandler.AuthMiddleware())
 	{
 		authorized.POST("", recipesHandler.NewRecipeHandler)
-		recipesIdRoute := "/:id"
+		recipesIdRoute := "/recipes/:id"
 		authorized.PUT(recipesIdRoute, recipesHandler.UpdateRecipeHandler)
 		authorized.DELETE(recipesIdRoute, recipesHandler.DeleteRecipeHandler)
 		authorized.GET(recipesIdRoute, recipesHandler.GetOneRecipeHandler)
 	}
 
-	router.RunTLS(":443", "certs/localhost.crt", "certs/localhost.key")
+	return router
+}
+
+func main() {
+	//SetupServer().RunTLS(":443", "certs/localhost.crt", "certs/localhost.key")
+	SetupServer().Run()
 }

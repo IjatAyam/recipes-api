@@ -59,7 +59,7 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 
 		data, _ := json.Marshal(recipes)
 		handler.redisClient.Set(handler.ctx, "recipes", string(data), 0)
-		c.JSON(http.StatusOK, recipes)
+		c.JSON(http.StatusOK, recipes[:10])
 	} else if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -69,7 +69,7 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 		log.Printf("Request to Redis")
 		recipes := make([]models.Recipe, 0)
 		json.Unmarshal([]byte(val), &recipes)
-		c.JSON(http.StatusOK, recipes)
+		c.JSON(http.StatusOK, recipes[:10])
 	}
 }
 
